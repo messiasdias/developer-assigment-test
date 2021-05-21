@@ -21,4 +21,10 @@ require __DIR__ . '/../src/middlewares.php';
 require __DIR__ . '/../src/routes.php';
 
 //Run App
-$app->run();
+try {
+    $app->run();
+} catch (Slim\Exception\HttpNotFoundException $e){
+    header("HTTP/1.1 404 End-Point Not Found!");
+    header("Content-Type: application/json");
+    echo json_encode(['status' => ['message' => $e->getMessage(), 'code' => 404]]);
+}
