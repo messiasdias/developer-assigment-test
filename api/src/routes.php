@@ -4,11 +4,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Controllers\PersonController;
 
-//Not Found
-$app->get('error/{status}', function (Request $request, Response $response, $args) {
-    return $response->withStatus($args['status'] ?? 404);
-});
-
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) {
   $response->getBody()->write(json_encode(['success' => "API is working!"]));
