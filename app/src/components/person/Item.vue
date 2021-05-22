@@ -1,6 +1,6 @@
 <template>
  <div class="app-item">
-    <img class="app-item-img" :src="person.img || personImageDefault"/>
+    <img class="app-item-img" :src="person.img ? person.img : personImageDefault"/>
     <div class="app-item-footer"> 
       <h3>{{person.name}}</h3>
 

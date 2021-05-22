@@ -117,6 +117,7 @@ export default {
         dateOfBirth: null,
         city: null,
         phone: null,
+        image: null,
       },
       errors: [],
     }
@@ -126,6 +127,7 @@ export default {
       this.$v.form.$touch()
       console.log(this.$v.form.$error, this.$v.form.$touch(), this.form)
       if (!this.$v.form.$error) {
+        console.log(this.form)
         Axios({
           url: `${this.api}/person`,
           method: this.person ? 'PATCH' : 'POST',

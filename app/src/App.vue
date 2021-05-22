@@ -6,7 +6,7 @@
     </span>
     <img 
       v-for="(person, i) in persons" :key="i" 
-      :src="person.img || personImageDefault"
+      :src="person.img ? person.img : personImageDefault"
       :title="person.name"
       :class="{'active': personActive && personActive.id == person.id}"
       @click="jumpTo(person)"

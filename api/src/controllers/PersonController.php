@@ -58,7 +58,7 @@ class PersonController extends Controller
 
     //validations here
 
-    $data = $this->only($request, ['name', 'email', 'phone', 'city', 'dateOfBirth']);
+    $data = $this->only($request, ['name', 'email', 'phone', 'city', 'dateOfBirth', 'image']);
     if (Person::where($data)->first()) {
       return $this->json(null, 406);
     }
@@ -86,7 +86,7 @@ class PersonController extends Controller
 
       //validations here
 
-      $data = $this->only($request, ['id', 'email', 'phone', 'city', 'dateOfBirth']);
+      $data = $this->only($request, ['id', 'email', 'phone', 'city', 'dateOfBirth', 'image']);
       $person = Person::find($data['id']);
       
       if (!$person) {

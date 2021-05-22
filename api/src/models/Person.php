@@ -22,6 +22,7 @@ class Person extends Model
     'email',
     'dateOfBirth',
     'city',
-    'phone'
+    'phone',
+    'image'
   ];
 }

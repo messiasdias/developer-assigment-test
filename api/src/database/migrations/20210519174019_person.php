@@ -27,6 +27,7 @@ final class Person extends Migration
             ->addColumn('phone', 'string')
             ->addColumn('city', 'string')
             ->addColumn('dateOfBirth', 'date')
+            ->addColumn('image', 'string', ['null' => true])
             ->addTimestamps()
             ->create();   
     }
