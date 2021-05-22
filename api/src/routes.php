@@ -11,8 +11,8 @@ $app->get('/', function (Request $request, Response $response, $args) {
 });
 
 $app->group('/person', function (RouteCollectorProxy $group) {
-  $group->get('', PersonController::class . ':all');
-  $group->get('/{id}', PersonController::class . ':find');
+  $group->get('[/{page:[0-9]+}/{perPage:[0-9]+}]', PersonController::class . ':all');
+  $group->get('/{id:[0-9]+}', PersonController::class . ':find');
   $group->post('', PersonController::class . ':create');
   $group->patch('', PersonController::class . ':update');
   $group->delete('', PersonController::class . ':delete');

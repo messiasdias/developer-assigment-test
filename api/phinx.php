@@ -60,9 +60,12 @@ return
         'migrations' => [
             'App\Database' => '%%PHINX_CONFIG_DIR%%/src/database/migrations'
         ],
-        'seeds' => '%%PHINX_CONFIG_DIR%%/src/database/seeds',
+        'seeds' => [
+            'App\Database' => '%%PHINX_CONFIG_DIR%%/src/database/seeds',
+        ]
     ],
     'migration_base_class' => 'App\Database\Migration',
+    'seed_base_class' => 'App\Database\Seed',
     'environments' => [
         'default_migration_table' => 'migrations',
         'default_environment' => $_ENV['APP_ENV']  ?? 'development',

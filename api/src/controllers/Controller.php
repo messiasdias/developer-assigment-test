@@ -76,7 +76,10 @@ class Controller
 
     public function only(Request $request, $keys = []) : Array
     {
-      $parsedBody = $request->getParsedBody();
+      $parsedBody = array_merge(
+        $request->getParsedBody() ?? [], 
+        $request->getQueryParams() ?? []
+      );
       $data = [];
 
       if ($parsedBody) {

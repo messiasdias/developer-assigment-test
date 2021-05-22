@@ -10,8 +10,15 @@ class AuthMiddleware extends Middleware
 {
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        //Temporary|Demo authorization
-        if($request->getHeaderLine('Authorization')) {
+        /*
+          Temporary|Demo authorization Token 
+
+          eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+          eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFwcCBUZXN0IiwiaWF0IjoxNjIxNTg3MzYwfQ.
+          Fw-DnZ8f78D05W6_YVA9Jh4LnODmBpWyeN-6nSz62bc
+        */
+        $secret = 'Fw-DnZ8f78D05W6_YVA9Jh4LnODmBpWyeN-6nSz62bc';
+        if($request->getHeaderLine('Authorization') ===  $secret) {
           return $handler->handle($request);
         }
 

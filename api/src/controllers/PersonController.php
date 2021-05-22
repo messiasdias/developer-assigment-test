@@ -17,11 +17,12 @@ class PersonController extends Controller
    * @return void
    */
   public function all(Request $request, Response $response, $args = []) {
-    $persons = Person::all();
-    if ($persons) {
-      return $this->json($persons);
-    }
-    return $this->json([]);
+      return $this->json(
+          Person::paginated(
+            isset($args['page']) ? (int) $args['page'] : null, 
+            isset($args['perPage']) ? (int) $args['perPage'] : null
+          )
+      );
   }
 
   /**
@@ -63,6 +64,8 @@ class PersonController extends Controller
     }
 
     $person = Person::create($data);
+    $person->created_at = new \DateTime();
+    $person->updated_at = new \DateTime();
     $person->save();
     return $this->json($person, 201);
   }
@@ -90,7 +93,9 @@ class PersonController extends Controller
         return $this->json(null, 404);
       }
 
-      $person->fill($data)->save();
+      $person->fill($data);
+      $person->updated_at = new \DateTime();
+      $person->save();
       return $this->json($person, 200);
   }
 
@@ -104,12 +109,11 @@ class PersonController extends Controller
    * @return void
    */
   public function delete(Request $request, Response $response, $args = []) {
-    if (!$request->getParsedBody()) {
+    if (!$request->getParsedBody() && !$request->getQueryParams()) {
       return $this->json(null, 400);
     }
 
     //validations here
-
     $data = $this->only($request, ['id']);
     $person = Person::find($data['id']);
 

@@ -13,7 +13,11 @@
         "illuminate/database": "~5.1",
         "php-di/php-di": "^6.3",
         "robmorgan/phinx": "^0.12.7",
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "fzaninotto/faker": "^1.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.4"
     },
     "scripts": {
         "dev": "php -S 0.0.0.0:8090 -t public/",
@@ -22,8 +26,10 @@
             "@migrate -e testing",
             "vendor/bin/phpunit test"
         ],
-        "migrate": "php vendor/bin/phinx migrate",
         "make:migration": "php vendor/bin/phinx create",
+        "make:seed": "php vendor/bin/phinx seed:create",
+        "migrate": "php vendor/bin/phinx migrate",
+        "seed": "php vendor/bin/phinx seed:run",
         "post-create-project-cmd": [
             "touch storage/database.sqlite"
         ]
@@ -33,8 +39,5 @@
             "App\\": "src/",
             "Test\\": "test/"
         }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^6.4"
     }
 }

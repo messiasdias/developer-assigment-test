@@ -161,10 +161,10 @@ class PersonControllerTest extends TestCase
         $response = $this->controller->all($request, $this->response, ['id' => 1]);
         $data = json_decode($response->getBody()->__toString());
         
-        $this->assertEquals(1, count($data));
-        $this->assertEquals(1, $data[0]->id);
-        $this->assertEquals('Jhon Snow', $data[0]->name);
-        $this->assertEquals('jhon_snow@test.com', $data[0]->email);
+        $this->assertEquals(1, count($data->data));
+        $this->assertEquals(1, $data->data[0]->id);
+        $this->assertEquals('Jhon Snow', $data->data[0]->name);
+        $this->assertEquals('jhon_snow@test.com', $data->data[0]->email);
     }
 
     /**
