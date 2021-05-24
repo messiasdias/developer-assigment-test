@@ -1,6 +1,19 @@
 <?php
-//Loading .env file
 try {
+    //Create storage dir
+    $path = __DIR__ .'/storage';
+    if (!is_dir($path)) {
+        mkdir($path, 0777, true);
+    }
+
+    //Create env File
+    $env = __DIR__ .'/.env';
+    $envExample = __DIR__ . "/.env.example";
+    if (file_exists($envExample) && !file_exists($env)) {
+        file_put_contents($env, file_get_contents($envExample));
+    }
+
+    //Loading .env file
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
     $dotenv->required(['APP_ENV','DB_DRIVER']);
@@ -53,6 +66,7 @@ $database = array_merge(
         'charset' => 'utf8'
     ]
 );
+
 
 return
 [

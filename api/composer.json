@@ -22,7 +22,7 @@
     "scripts": {
         "dev": "php -S 0.0.0.0:8090 -t public/",
         "test": [
-            "rm storage/test_database.sqlite3",
+            "vendor/bin/phinx rollback -e testing --no-interaction",
             "@migrate -e testing",
             "vendor/bin/phpunit test"
         ],
