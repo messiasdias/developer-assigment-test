@@ -1,4 +1,4 @@
-# Developer assignment Test - Kevi.io 
+# Developer assignment Test - Kevi
 
 ## Get Started
 
@@ -8,7 +8,7 @@ Assuming it is in the root directory, run the command below to enter the directo
 
 ## API
 
-### Install, Migrate database, Seed and Test
+### Install
 
 ```
 cd api
@@ -37,14 +37,14 @@ respectively for development, test and production:
 The same steps apply to the Seeds classes.
 
 Obs:
-When running the test, the `testing` environment assumes the migrate and seed commands, defaults to eviroment` development`.
+When running the test, the `testing` environment assumes the migrate and seed commands, defaults to environment` development`.
 
 ```
 composer migrate
 composer seed
 ```
 
-> Make Seeders or Migration Classes (Optional)
+> Make Files Seeders or Migration Classes (Optional)
 ```
 composer make:migration ClassNameCamelCase
 composer make:seed ClassNameCamelCase
