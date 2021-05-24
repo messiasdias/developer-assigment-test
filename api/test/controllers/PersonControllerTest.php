@@ -128,6 +128,10 @@ class PersonControllerTest extends TestCase
         ];
         $request = $this->createRequest('PATCH', '/person', $data);
         $response = $this->controller->update($request, $this->response);
+        $data = json_decode($response->getBody()->__toString());
+
+        $this->assertEquals(1, $data->id);
+        $this->assertEquals('Mystic Falls - Virginia', $data->city);
         $this->assertEquals(200, $response->getStatusCode());
     }
 
@@ -160,11 +164,11 @@ class PersonControllerTest extends TestCase
         $request = $this->createRequest('GET', '/person');
         $response = $this->controller->all($request, $this->response, ['id' => 1]);
         $data = json_decode($response->getBody()->__toString());
-        
-        $this->assertEquals(1, count($data->data));
-        $this->assertEquals(1, $data->data[0]->id);
-        $this->assertEquals('Jhon Snow', $data->data[0]->name);
-        $this->assertEquals('jhon_snow@test.com', $data->data[0]->email);
+
+        $this->assertEquals(1, count($data->items));
+        $this->assertEquals(1, $data->items[0]->id);
+        $this->assertEquals('Jhon Snow', $data->items[0]->name);
+        $this->assertEquals('jhon_snow@test.com', $data->items[0]->email);
     }
 
     /**

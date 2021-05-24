@@ -1,23 +1,39 @@
 <template>
 <div class="app">
   <div class="app-top">
-    <span v-if="this.page.index > 1" class="previus" @click="previusPage()">
+    <!--  v-if="this.pagination.index > 1" -->
+    <span v-if="this.pagination.index > 1" class="previus" @click="previusPage()">
       <i class="fas fa-chevron-circle-left"></i>
+       <small>{{this.pagination.index - 1 }}</small>
     </span>
-    <img 
-      v-for="(person, i) in persons" :key="i" 
-      :src="person.img ? person.img : personImageDefault"
-      :title="person.name"
-      :class="{'active': personActive && personActive.id == person.id}"
-      @click="jumpTo(person)"
-    />
-    <img class="active" v-if="persons.length === 0" :src="personImageDefault"/>
-    <span v-if="this.page.hasNext" class="next" @click="nextPage()">
+    <div class="person-scroll">
+        <span 
+          v-for="(person, i) in persons" :key="i"
+          :class="{'active': personActive && personActive.id == person.id}"
+          @click="jumpTo(person)"
+        >
+          <img 
+            :src="person.img ? person.img : personImageDefault"
+            :title="person.name"
+            :class="{'active': personActive && personActive.id == person.id}"
+            @click="jumpTo(person)"
+          />
+          <small>{{person.name}}</small>
+        </span>
+        <img class="active" v-if="persons.length === 0 && !loading" :src="personImageDefault"/>
+    </div>
+    <span v-if="this.pagination.hasNext" class="next" @click="nextPage()">
       <i class="fas fa-chevron-circle-right"></i>
+      <small>{{this.pagination.index + 1}}</small>
     </span>
   </div>
 
-  <div :class="`app-body ${persons.length === 0 ? 'empty' : ''}`">
+
+  <div v-if="loading === true" class="app-body empty">
+    <Loading />
+  </div>
+
+  <div v-else :class="`app-body ${persons.length === 0 ? 'empty' : ''}`">
     <template v-if="persons.length > 0" >
       <Item 
         v-for="(person, i) in persons" :key="i"
@@ -26,26 +42,29 @@
         @showOverlay="showOverlay = $event"
         @success="getPersons()"
         @error="getPersons()"
+        :class="{'active': personActive && personActive.id == person.id}"
       />
     </template>
 
-    <div v-if="persons.length === 0" >
+    <div v-if="persons.length === 0 && !loading" >
       <i class="fas fa-exclamation-triangle" size="5x"></i>
       <p>Oops! No people added yet</p>
     </div>
-
-    <Form 
-      v-if="showFormAdd === true" 
+     <Form
       @success="getPersons()"
       @error="getPersons()"
-      @cancel="showFormAdd = false"
     />
   </div>
 
   <div class="app-footer">
-    <span class="app-add-btn" @click="addPerson()">
+    <a 
+      href="#"
+      class="app-add-btn" 
+      data-bs-toggle="modal"
+      data-bs-target="#addPerson"
+    >
       <i class="fas fa-plus"></i>
-    </span>
+    </a>
   </div>
   <div v-if="showOverlay" @click="$emit('overlayClick')" class="overlay" />
 </div>
@@ -57,16 +76,19 @@ import Swal from 'sweetalert2'
 import Item from '@/components/person/Item'
 import Form from '@/components/person/Form'
 import Modal from '@/components/person/Modal'
+import Loading from '@/components/Loading.vue'
 
 export default {
   name: 'App',
   components: {
     Item,
     Form,
-    Modal
+    Modal,
+    Loading
   },
   data(){
     return {
+      loading: true,
       toast: Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -83,9 +105,11 @@ export default {
       showModal: false,
       personActive: null,
       personImageDefault: require('@/assets/person.png'),
-      page: {
+      pagination: {
         index: 1,
         hasNext: false,
+        perPage: 10,
+        total: 1,
       }
     }
   },
@@ -113,24 +137,30 @@ export default {
       return moment(date, "YYYYMMDD").format('DD/MM/YYYY')
     },
     previusPage(){
-      if (this.page.index > 1) {
-        this.page.index--
+      if (this.pagination.index > 1) {
+        this.pagination.index--
       }
     },
     nextPage(){
-      if (this.page.index >= 1 && this.page.hasNext) {
-        this.page.index++
+      if (this.pagination.index >= 1 && this.pagination.hasNext) {
+        this.pagination.index++
       }
     },
     getPersons(){
-      Axios.get(`${this.api}/person/${this.page.index}/18`)
+      Axios.get(`${this.api}/person/${this.pagination.index}/${this.pagination.perPage}`)
       .then((response) => {
         this.persons = []
-        this.page.hasNext = response.data.hasNext
+        this.pagination.hasNext = response.data.hasNext
         this.persons = Object.values(response.data.items)
+        setTimeout(() => {this.loading = false}, 300)
       })
       .catch(() => {
+        this.pagination.hasNext = false
         this.persons = []
+        this.pagination.index = 1
+        this.pagination.perPage = 10
+        this.pagination.total = 1
+        setTimeout(() => {this.loading = false}, 300)
       })
     },
     setAxiosInterceptors(){
@@ -138,7 +168,7 @@ export default {
         let secret = this.secret
         let api = this.api
   
-        Axios.interceptors.request.use(function (config) {
+        Axios.interceptors.request.use((config) => {
           if (config.url.startsWith(api)) {
             config.headers.Authorization = secret
           } else {
@@ -147,14 +177,24 @@ export default {
           return config
         })
 
-        Axios.interceptors.response.use(async (response) => {
+        Axios.interceptors.response.use((response) => {
           return Promise.resolve(response)
         }, (error) => {
-          console.error(e)
-          return Promise.reject(error)
+          return Promise.reject(error.response)
         })
       }
     },
+  },
+  beforeMount(){
+    let pagination = localStorage.pagination
+    if(pagination) {
+      this.pagination = JSON.parse(pagination)
+    }
+
+    let personActive = localStorage.personActive
+     if(personActive) {
+      this.personActive = JSON.parse(personActive)
+    }
   },
   created(){
     this.setAxiosInterceptors()
@@ -173,8 +213,13 @@ export default {
     showFormAdd(){
       this.showOverlay = this.showFormAdd
     },
-    "page.index"(){
+    "pagination.index"(){
       this.getPersons()
+      localStorage.pagination = JSON.stringify(this.pagination)
+    },
+    personActive(){
+      this.getPersons()
+      localStorage.personActive = JSON.stringify(this.personActive)
     }
   }
 }

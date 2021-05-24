@@ -9,7 +9,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
       $persons = [];
       if ($page && $perPage) {
         $persons = self::all()
-        ->sortBy('updated_at', 2)
+        ->sortByDesc('updated_at')
         ->forPage($page, $perPage)
         ->all();
       }
@@ -26,7 +26,7 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model
       ];
 
       if ($persons) {
-        $data['items'] = (array) $persons;
+        $data['items'] = $persons;
 
         if ($page && $perPage) {
           $data = array_merge (

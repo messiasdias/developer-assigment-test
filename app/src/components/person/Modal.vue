@@ -1,61 +1,37 @@
 <template>
-<div class="app-modal">
-  <p>Do you really want to delete the person's data?</p>
-  <div>
-    <a @click.prevent="$emit('cancel')" >Cancel</a>
-    <a @click.prevent="deletePerson()" >OK</a>
+<div 
+  class="modal fade" 
+  :id="id"
+  :aria-labelledby="`${id}Label`"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1" 
+  role="dialog" 
+  aria-hidden="true"
+>
+ <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <slot name="header" />
+      </div>
+      <div class="modal-body">
+        <slot name="body" />
+      </div>
+      <div class="modal-footer">
+        <slot name="footer" />
+      </div>
+    </div>
   </div>
 </div>
 </template>
 <script>
-import Axios from 'axios'
-
 export default {
-  name: 'Modal',
+  name: 'Form',
   props: {
-    person: {
-      type: Object,
-      default: () => {
-        return null
-      }
-    },
-  },
-  data(){
-    return {
-      api: process.env.VUE_APP_API,
+    id: {
+      type: String,
+      default: 'addPerson'
     }
   },
-  methods: {
-    deletePerson(){
-      Axios.delete(`${this.api}/person`, {params: {id: this.person.id}})
-      .then((response) => {
-        if (response.data.success) {
-          this.$root.$emit(
-              'msg',
-              {
-                type: 'success',
-                title: 'Deleted!',
-                text: `Data successfully deleted!`
-              }
-          )
-          this.$emit('success')
-          this.$emit('delete', this.person)
-          this.$emit('cancel')
-        }
-      })
-      .catch((error) => {
-        console.error(error)
-
-         this.$root.$emit(
-          'msg',
-          {
-            type: 'error',
-            text: `You must fill in all mandatory fields!`
-          }
-        )
-        this.$emit('cancel')
-      })
-    }
-  }
 }
 </script>

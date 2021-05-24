@@ -59,8 +59,10 @@ class PersonController extends Controller
     //validations here
 
     $data = $this->only($request, ['name', 'email', 'phone', 'city', 'dateOfBirth', 'image']);
-    if (Person::where($data)->first()) {
-      return $this->json(null, 406);
+    if (Person::where('email', $data['email'])->first()) {
+      return $this->json([
+        'email' => ['There is already a one person with the same email address registered.' ]
+      ], 406);
     }
 
     $person = Person::create($data);
@@ -86,16 +88,15 @@ class PersonController extends Controller
 
       //validations here
 
-      $data = $this->only($request, ['id', 'email', 'phone', 'city', 'dateOfBirth', 'image']);
+      $data = $this->only($request, ['id', 'name', 'email', 'phone', 'city', 'dateOfBirth', 'image']);
       $person = Person::find($data['id']);
       
       if (!$person) {
         return $this->json(null, 404);
       }
 
-      $person->fill($data);
       $person->updated_at = new \DateTime();
-      $person->save();
+      $person->fill($data)->save();
       return $this->json($person, 200);
   }
 

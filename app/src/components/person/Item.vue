@@ -10,30 +10,23 @@
       <small><b><i class="fa fa-at"></i></b> {{person.email}}</small>
 
       <div class="actions">
-        <a @click="showForm = true" ><i class="fa fa-edit"></i></a>
-        <a @click="showModal = true" ><i class="fas fa-trash"></i></a>
+        <a href="#" data-bs-toggle="modal" :data-bs-target="`#person${person.id}`" ><i class="fa fa-edit"></i></a>
+        <a @click="deleteConfirmation()" ><i class="fas fa-trash"></i></a>
       </div>
     </div>
 
     <Form
-      v-if="showForm === true" 
       :person="person"
+      :modalId="`person${person.id}`"
       @success="$emit('success', $event)"
       @error="$emit('error', $event)"
-      @cancel="showForm = false"
-    />
-
-    <Modal
-      v-if="showModal === true"
-      :person="person"
-      @delete="$emit('success', $event)"
-      @error="$emit('error', $event)"
-      @cancel="showModal = false"
     />
 </div>
 </template>
 <script>
+import axios from 'axios'
 import moment from 'moment'
+import swal from 'sweetalert2'
 import Form from '@/components/person/Form'
 import Modal from '@/components/person/Modal'
 
@@ -55,27 +48,72 @@ export default {
     return {
       api: process.env.VUE_APP_API,
       personImageDefault: require('@/assets/person.png'),
-      showForm: false,
-      showModal: false,
+      //showForm: false,
+      //showModal: false,
     }
   },
   methods: {
     formatDate(date){
       return moment(date, "YYYYMMDD").format('DD/MM/YYYY')
     },
+    deleteConfirmation(){
+      let item = this
+      swal.fire({
+        title: 'Delete Person',
+        text: 'Do you really want to delete the person data?',
+        icon: 'warning',
+        showConfirmButton: true,
+        confirmButtonColor: '#7d2ae8',
+        cancelButtonColor: '#ccc',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+      })
+      .then(function(value) {
+        if (value.isConfirmed && !value.isDismissed) {
+          item.deletePerson()
+        }
+      })
+    },
+    deletePerson(){
+      axios.delete(`${this.api}/person`, {params: {id: this.person.id}})
+      .then((response) => {
+        if (response.data.success) {
+          this.$root.$emit(
+              'msg',
+              {
+                type: 'success',
+                title: 'Deleted!',
+                text: `Data successfully deleted!`
+              }
+          )
+          this.$emit('success')
+        }
+      })
+      .catch((error) => {
+         this.$emit('error')
+         this.$root.$emit(
+          'msg',
+          {
+            type: 'error',
+            text: `You must fill in all mandatory fields!`
+          }
+        )
+        this.$emit('cancel')
+      })
+    }
   },
   watch: {
     showForm(){
-      this.$emit('showOverlay', this.showForm)
+      //this.$emit('showOverlay', this.showForm)
     },
     showModal(){
-      this.$emit('showOverlay', this.showModal)
+      //this.$emit('showOverlay', this.showModal)
     }
   },
   mounted(){
     this.$parent.$on('overlayClick', () => {
-      this.showModal = false
-      this.showForm = false
+      //this.showModal = false
+      //this.showForm = false
     })
   }
 }
